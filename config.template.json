@@ -1,6 +1,7 @@
 {
 	"projectId" : "abcd",
 	"httpsPort" : 443,
+	"httpPort" : 80,
 	"googleAction" : {
 		"clientId" : "12345",
 		"clientSecret" : "4711",

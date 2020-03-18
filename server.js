@@ -5,9 +5,8 @@ const https = require('https');
 const http = require('http');
 const fs = Promise.promisifyAll(require('fs'));
 const io = require('socket.io');
-const certificate = require("./lib/certificate");
 const helmet = require('helmet');
-const aux = require("./lib/_aux");
+const {aux, certificate} = require("google-action-util");
 
 global.config = JSON.parse(fs.readFileSync("./config.json", "utf8"));
 const oauth = require("./lib/oauth");
@@ -18,8 +17,8 @@ const socketLoggeIn = require("./lib/socket/loggedIn");
 async function execute(){
 	await certificate.initCertificate("rumo");
 
-	let httpServer = new HTTPServer(3001);
-	let httpsServer = new HTTPSServer(3000);
+	let httpServer = new HTTPServer(global.config.httpsPort);
+	let httpsServer = new HTTPSServer(global.config.httpPort);
 	await httpsServer.open();
 
 	let interval = 12*60*60*1000;
