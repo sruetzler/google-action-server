@@ -1,0 +1,19 @@
+{
+	"projectId" : "abcd",
+	"httpsPort" : 443,
+	"googleAction" : {
+		"clientId" : "12345",
+		"clientSecret" : "4711",
+		"smarthomeApiKey" : "0815E"
+	},
+	"rumo" : {
+		"clientId" : "xyz",
+		"clientSecret" : "mno"
+	},
+	"keys" : {
+		"api" : "lsakdfj",
+		"oAuthClientId" : "owerut",
+		"serviceAccountKey" : "./abc.json"
+	}
+
+}

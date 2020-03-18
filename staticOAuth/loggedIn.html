@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Rumo Smarthome Logged in</title>
+	</head>
+	<body>
+		<h1>Rumo Smarthome Logged in</h1>
+		<div>
+			<a href="" id="backToApp" >Back to App</a>
+		</div>
+		<!-- <a href="#" onclick="signOut();">Sign out</a> -->
+	</body>
+	<script src="https://apis.google.com/js/platform.js" async defer></script>
+	<script>
+		window.onload = function () {
+			let queries = document.URL.split("?")[1];
+			if (queries){
+				queries = queries.split("&").map(decodeURIComponent).reduce((queries,e)=>{
+					e = e.split("=");
+					queries[e[0]] = e[1];
+					return queries;
+				},{});
+				let url = queries.redirect_uri + "?code=" + queries.code + "&state=" + queries.state;
+				document.getElementById("backToApp").href=url;
+			}
+		}
+	</script>
+</html>

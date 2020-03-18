@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>test</title>
+	</head>
+	<body>
+		<h1>test</h1>
+	</body>
+	<script>
+		window.onload = function () {
+			log("onload2",document.URL);
+			setTimeout(function(){
+				log("onload3",document.URL);
+			},2000)
+		}
+		function log(msg){
+			body = {msg:msg}
+			let xhr = new XMLHttpRequest();
+
+			//         Methode  Datei       asynchron
+			xhr.open ( "PUT",  "/log", JSON.stringify(body) );
+			xhr.setRequestHeader("Content-Type", "application/json");
+
+			xhr.send (JSON.stringify(body));
+		}
+	</script>
+</html>

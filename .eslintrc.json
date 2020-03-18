@@ -1,0 +1,62 @@
+{
+  "env": {
+    "es6": true,
+    "node": true,
+    "jquery": true
+  },
+  "extends": "eslint:recommended",
+  "parserOptions": {
+    "ecmaVersion": 2017,
+    "sourceType": "module"
+  },
+  "globals": {
+    "define": true,
+    "GETTEXT": true,
+    "localStorage": true,
+    "sessionStorage": true,
+    "CustomEvent": true,
+    "MutationObserver": true,
+    "Event": true,
+    "Image": true,
+    "window": true,
+    "document": true,
+    "getComputedStyle": true,
+    "parent": true,
+    "navigator": true,
+    "location": true,
+    "XMLHttpRequest": true,
+    "RumoSocket": true,
+	"isDevelopmentStructure": true,
+	"staticRootDir": true,
+	"config" : true
+  },
+  "rules": {
+    "no-console": 0,
+    "no-constant-condition": 0,
+    "no-empty": 0,
+    "no-extra-boolean-cast": 0,
+    "no-fallthrough": 0,
+    "no-mixed-spaces-and-tabs": 0,
+    "no-unexpected-multiline": 0,
+    "no-unreachable": 0,
+    "no-unused-vars": "error",
+    "no-useless-escape": 0,
+    "getter-return": 0,
+    "indent": [
+      "off",
+      "tab"
+    ],
+    "linebreak-style": [
+      "error",
+      "unix"
+    ],
+    "quotes": [
+      "off",
+      "double"
+    ],
+    "semi": [
+      "error",
+      "always"
+    ]
+  }
+}

@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+	<meta name="google-signin-client_id" content="1059132773105-ubqmkgee6hun2h1vf903akrvjp095ji2.apps.googleusercontent.com">
+	<head>
+		<title>Rumo Smarthome Login</title>
+	</head>
+	<body>
+		<h1>Rumo Smarthome Login</h1>
+		<div class="g-signin2" data-onsuccess="onSignIn"></div>
+		<p id="errorMsg"></p>
+		<!-- <a href="#" onclick="signOut();">Sign out</a> -->
+	</body>
+	<script src="https://apis.google.com/js/platform.js" async defer></script>
+	<script>
+		function put(url, body){
+			send("PUT", url, body);
+		}
+		function send(method, url, body){
+			let xhr = new XMLHttpRequest();
+
+			//         Methode  Datei       asynchron
+			xhr.open ( method,  url, JSON.stringify(body) );
+			xhr.setRequestHeader("Content-Type", "application/json");
+
+			xhr.addEventListener('load', function(event) {
+				if (xhr.status >= 200 && xhr.status < 300) {
+					let url = xhr.responseText.replace(/"/g,"")
+					window.location.href = url;
+				} else {
+					let err = xhr.responseText;
+					try{
+						err = JSON.parse(xhr.responseText).error;
+					}catch(err){}
+					document.getElementById("errorMsg").innerHTML = xhr.statusText + ": " + err;
+					console.warn(xhr.statusText, xhr.responseText);
+				}
+			});
+
+			xhr.send (JSON.stringify(body));
+		}
+		// function signOut() {
+		// 	var auth2 = gapi.auth2.getAuthInstance();
+		// 	auth2.signOut().then(function () {
+		// 		console.log('User signed out.');
+		// 	});
+		// }
+
+		function onSignIn(googleUser) {
+			try{
+				var profile = googleUser.getBasicProfile();
+				// console.log('ID: ' + profile.getId()); // Do not send to your backend! Use an ID token instead.
+				// console.log('Name: ' + profile.getName());
+				// console.log('Image URL: ' + profile.getImageUrl());
+				// console.log('Email: ' + profile.getEmail()); // This is null if the 'email' scope is not present.
+
+				var id_token = googleUser.getAuthResponse().id_token;
+				let queries = document.URL.split("?")[1];
+				if (queries){
+					queries = queries.split("&").map(decodeURIComponent).reduce((queries,e)=>{
+						e = e.split("=");
+						queries[e[0]] = e[1];
+						return queries;
+					},{});
+					put("/login",{
+						code : queries.code,
+						state : queries.state,
+						client_id : queries.client_id,
+						rumo_client_id : queries.rumo_client_id,
+						id_token : id_token
+					});
+				}
+			}catch(err){
+				console.error(err);
+			}
+		}
+	</script>
+</html>
