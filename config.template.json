@@ -2,6 +2,7 @@
 	"projectId" : "abcd",
 	"httpsPort" : 443,
 	"httpPort" : 80,
+	"hostName" : "example.com",
 	"googleAction" : {
 		"clientId" : "12345",
 		"clientSecret" : "4711",

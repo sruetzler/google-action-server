@@ -1,4 +1,9 @@
 config.json
+rumo-*.json
+keys
+letsEncrypeStatic
+letsencrypt/data
+
 
 # Logs
 logs

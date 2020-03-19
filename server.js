@@ -17,8 +17,10 @@ const socketLoggeIn = require("./lib/socket/loggedIn");
 async function execute(){
 	await certificate.initCertificate("rumo");
 
-	let httpServer = new HTTPServer(global.config.httpsPort);
-	let httpsServer = new HTTPSServer(global.config.httpPort);
+
+	let httpServer = new HTTPServer(global.config.httpPort);
+	await checkExistingCertificate(httpServer);
+	let httpsServer = new HTTPSServer(global.config.httpsPort);
 	await httpsServer.open();
 
 	let interval = 12*60*60*1000;
@@ -37,14 +39,42 @@ async function execute(){
 	setTimeout(checkCertificate,interval);
 }
 
-
-async function _checkCertificate(){
+async function checkExistingCertificate(httpServer){
 	try{
-		let data = await aux.exec("./letsencrypt/cerbot.sh");
-		return data.code !== 0;
+		await fs.accessAsync('./letsencrypt/data/live/' + global.config.hostName);
+	}catch(err){
+		try{
+			await fs.mkdirAsync("./letsEncrypeStatic");
+			await fs.mkdirAsync("./letsEncrypeStatic/.well-known");
+			await fs.mkdirAsync("./letsEncrypeStatic/.well-known/acme-challenge");
+			await httpServer.open();
+			console.log("first you have to create a letsencrypt certifiacate");
+			console.log("call letsencrypt/cerbot.sh new");
+			console.log("store challeng in letsEncrypeStatic/.well-known/acme-challenge");
+			let wait = true;
+			while (wait){
+				try{
+					await fs.accessAsync('./letsencrypt/data/live/' + global.config.hostName);
+					wait = false;
+				}catch(err){
+					await Promise.delay(2000);
+				}
+			}
+		}catch(err){
+		}finally{
+			await httpServer.close();
+		}
+	}
+}
 
+async function _checkCertificate(newCertifcate){
+	let args = [];
+	if (newCertifcate) args.push("new");
+	try{
+		await aux.exec("./letsencrypt/cerbot.sh", args);
 	}catch(err){
 		console.log(err);
+		throw err;
 	}
 }
 
@@ -96,10 +126,10 @@ class HTTPSServer{
 	}
 	async open(){
 		console.log("open https");
-		let privateKey = await fs.readFileAsync('./letsencrypt/data/live/sruetzler.ddns.net/privkey.pem', 'utf8');
-		let cert = await fs.readFileAsync('./letsencrypt/data/live/sruetzler.ddns.net/fullchain.pem', 'utf8');
+		let privateKey = await fs.readFileAsync('./letsencrypt/data/live/' + global.config.hostName + '/privkey.pem', 'utf8');
+		let cert = await fs.readFileAsync('./letsencrypt/data/live/' + global.config.hostName + '/fullchain.pem', 'utf8');
 		let ca = [
-			await fs.readFileAsync('./letsencrypt/data/live/sruetzler.ddns.net/chain.pem', 'utf8'),
+			await fs.readFileAsync('./letsencrypt/data/live/' + global.config.hostName + '/chain.pem', 'utf8'),
 			await fs.readFileAsync('./keys/rumo-crt.pem', 'utf8'),
 		];
 		let options = {

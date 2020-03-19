@@ -7,7 +7,7 @@ cd $DIR
 if [ "$1" = "new" ]; then
 	/usr/bin/certbot certonly --manual $param
 else
-	test=$(/usr/bin/certbot renew $param | grep "No renewals were att empted")
+	test=$(/usr/bin/certbot renew $param | grep "No renewals were attempted")
 	if [ -z "$test" ]; then
 		exit -1
 	fi
