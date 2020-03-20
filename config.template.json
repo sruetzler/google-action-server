@@ -3,6 +3,8 @@
 	"httpsPort" : 443,
 	"httpPort" : 80,
 	"hostName" : "example.com",
+	"enableLetsEncrypt" : false,
+	"keyDir" : "/abc/adsf/",
 	"googleAction" : {
 		"clientId" : "12345",
 		"clientSecret" : "4711",

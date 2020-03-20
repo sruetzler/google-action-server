@@ -17,26 +17,30 @@ const socketLoggeIn = require("./lib/socket/loggedIn");
 async function execute(){
 	await certificate.initCertificate("rumo");
 
-
-	let httpServer = new HTTPServer(global.config.httpPort);
-	await checkExistingCertificate(httpServer);
+	let httpServer;
+	if (global.config.enableLetsEncrypt){
+		httpServer = new HTTPServer(global.config.httpPort);
+		await checkExistingCertificate(httpServer);
+	}
 	let httpsServer = new HTTPSServer(global.config.httpsPort);
 	await httpsServer.open();
 
-	let interval = 12*60*60*1000;
-//	let interval = 10*1000;
-	let checkCertificate = async function(){
-		console.log("checkCertificate");
-		try{
-			await httpServer.open();
-			if (await _checkCertificate()) await httpsServer.reconnect();
-		}catch(err){
-		}finally{
-			await httpServer.close();
-			setTimeout(checkCertificate,interval);
-		}
-	};
-	setTimeout(checkCertificate,interval);
+	if (global.config.enableLetsEncrypt){
+		let interval = 12*60*60*1000;
+		//	let interval = 10*1000;
+		let checkCertificate = async function(){
+			console.log("checkCertificate");
+			try{
+				await httpServer.open();
+				if (await _checkCertificate()) await httpsServer.reconnect();
+			}catch(err){
+			}finally{
+				await httpServer.close();
+				setTimeout(checkCertificate,interval);
+			}
+		};
+		setTimeout(checkCertificate,interval);
+	}
 }
 
 async function checkExistingCertificate(httpServer){
@@ -126,10 +130,13 @@ class HTTPSServer{
 	}
 	async open(){
 		console.log("open https");
-		let privateKey = await fs.readFileAsync('./letsencrypt/data/live/' + global.config.hostName + '/privkey.pem', 'utf8');
-		let cert = await fs.readFileAsync('./letsencrypt/data/live/' + global.config.hostName + '/fullchain.pem', 'utf8');
+		let keyDir;
+		if (global.config.enableLetsEncrypt) keyDir = './letsencrypt/data/live/' + global.config.hostName + '/';
+		else keyDir = global.config.keyDir;
+		let privateKey = await fs.readFileAsync(keyDir + 'privkey.pem', 'utf8');
+		let cert = await fs.readFileAsync(keyDir + 'fullchain.pem', 'utf8');
 		let ca = [
-			await fs.readFileAsync('./letsencrypt/data/live/' + global.config.hostName + '/chain.pem', 'utf8'),
+			await fs.readFileAsync(keyDir + 'chain.pem', 'utf8'),
 			await fs.readFileAsync('./keys/rumo-crt.pem', 'utf8'),
 		];
 		let options = {

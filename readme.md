@@ -11,6 +11,8 @@ https://developers.google.com/identity/sign-in/web/sign-in
 https://developers.google.com/assistant/smarthome/develop/report-state
 
 
+https://certbot.eff.org/lets-encrypt/debianjessie-other
+
 ---------------------------------------------
 Setup Action Console Project
 https://console.actions.google.com
