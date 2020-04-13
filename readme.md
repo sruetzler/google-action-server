@@ -89,7 +89,7 @@ Add own URI
 
 Create
 
-Store Client id in config.json
+Store Client id in config.json keys/oAuthClientId
 and static/login.html meta/content
 
 Ok
