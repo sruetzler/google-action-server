@@ -54,7 +54,7 @@ async function checkExistingCertificate(httpServer){
 			await httpServer.open();
 			console.log("first you have to create a letsencrypt certifiacate");
 			console.log("call letsencrypt/cerbot.sh new");
-			console.log("store challeng in letsEncrypeStatic/.well-known/acme-challenge");
+			console.log("store challenge in letsEncrypeStatic/.well-known/acme-challenge");
 			let wait = true;
 			while (wait){
 				try{
@@ -65,6 +65,7 @@ async function checkExistingCertificate(httpServer){
 				}
 			}
 		}catch(err){
+			console.error(err);
 		}finally{
 			await httpServer.close();
 		}
