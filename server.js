@@ -94,8 +94,8 @@ class HTTPServer{
 	}
 	async open(){
 		console.log("open http");
-		this.httpServer = http.createServer(this.expressApp);
-		this.httpServer.listen(this.port);
+//		this.httpServer = http.createServer(this.expressApp);
+//		this.httpServer.listen(this.port);
 	}
 	async close(){
 		if(this.httpServer){
