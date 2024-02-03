@@ -114,11 +114,15 @@ class HTTPSServer{
 	constructor(port){
 		this.port = port;
 		this.expressApp = express();
+		this.fridge = new Fridge();
 
 		this.expressApp.use(helmet());
 
 		this.expressApp.use(bodyParser.urlencoded({extended : true}));
 		this.expressApp.use(bodyParser.json());
+		this.expressApp.use(bodyParser.text());
+
+		this.fridge.use(this.expressApp);
 
 		this.expressApp.use(express.static('./staticOAuth'));
 		oauth(this.expressApp);
@@ -159,6 +163,7 @@ class HTTPSServer{
 		console.log("listening on port ",this.port);
 	}
 	async close(){
+		this.fridge.close();
 		if (this.httpsServer){
 			console.log("close https");
 			this.httpsServer.close();
