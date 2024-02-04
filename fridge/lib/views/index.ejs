@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+    <%- include('./partials/head.ejs') %>
+<body>    
+    <div class="container">
+        <%- include('./partials/nav.ejs') %>
+
+        <div class="modal fade" id="addModal" tabindex="-1" aria-labelledby="addModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="addModalLabel">Eintrag hinzufügen</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        
+                        <div class="form-floating" style="margin-top: 10px;">
+                            <input type="text" class="form-control" id="floatingName" placeholder="Name">
+                            <label for="floatingName">Name:</label>
+                        </div>
+                        
+                        <div class="form-floating" style="margin-top: 10px;">
+                            <input type="date" class="form-control" id="floatingDatum" placeholder="Datum">
+                            <label for="floatingDatum">Datum:</label>
+                        </div>
+
+                        <div class="form-floating" style="margin-top: 10px;">
+                            <input type="time" class="form-control" id="floatingUhrzeit" placeholder="Uhrzeit">
+                            <label for="floatingUhrzeit">Uhrzeit:</label>
+                        </div>
+                        
+                        <div class="form-floating" style="margin-top: 10px;">
+                            <input type="number" class="form-control" id="floatingStunden" placeholder="Stunden" inputmode="numeric">
+                            <label for="floatingStunden">Stunden:</label>
+                        </div>
+                        
+                        <div class="form-floating" style="margin-top: 10px;">
+                            <input type="password" class="form-control" id="floatingCode" placeholder="Code" inputmode="numeric" pattern="[0-9]+">
+                            <label for="floatingCode">Code:</label>
+                        </div>
+
+                        <div class="form-check" style="margin-top: 10px; margin-left: 5px;">
+                            <input class="form-check-input"type="checkbox" onclick="showPassword('floatingCode')" id="passwortZeigen">
+                            <label class="form-check-label" for="passwortZeigen">
+                              Code zeigen
+                            </label>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Schließen</button>
+                        <button type="button" class="btn btn-primary" onclick="speichern()">Speichern</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="bearbeitenModal" tabindex="-1" aria-labelledby="bearbeitenModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h1 class="modal-title fs-5" id="bearbeitenModalLabel">Eintrag bearbeiten</h1>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-floating" style="margin-top: 10px;">
+                        <input type="text" class="form-control" id="floatingNameB" placeholder="Name">
+                        <label for="floatingNameB">Name:</label>
+                    </div>
+                    
+                    <div class="form-floating" style="margin-top: 10px;">
+                        <input type="date" class="form-control" id="floatingDatumB" placeholder="Datum">
+                        <label for="floatingDatumB">Datum:</label>
+                    </div>
+
+                    <div class="form-floating" style="margin-top: 10px;">
+                        <input type="time" class="form-control" id="floatingUhrzeitB" placeholder="Uhrzeit">
+                        <label for="floatingUhrzeitB">Uhrzeit:</label>
+                    </div>
+                    
+                    <div class="form-floating" style="margin-top: 10px;">
+                        <input type="number" class="form-control" id="floatingStundenB" placeholder="Stunden" inputmode="numeric">
+                        <label for="floatingStundenB">Stunden:</label>
+                    </div>
+                    
+                    <div class="form-floating" style="margin-top: 10px;">
+                        <input type="password" class="form-control" id="floatingCodeB" placeholder="Code" inputmode="numeric" pattern="[0-9]+">
+                        <label for="floatingCodeB">Code:</label>
+                    </div>
+
+                    <div class="form-check" style="margin-top: 10px; margin-left: 5px;">
+                        <input class="form-check-input"type="checkbox" onclick="showPassword('floatingCodeB')" id="passwortZeigen">
+                        <label class="form-check-label" for="passwortZeigen">
+                          Code zeigen
+                        </label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Schließen</button>
+                  <button type="button" class="btn btn-danger" data-bs-target="#sicherModalLabel" data-bs-toggle="modal">Löschen</button>
+                  <button type="button" class="btn btn-primary" onclick="bearbeitenSp()">Speichern</button>
+                </div>
+              </div>
+            </div>
+        </div>
+        
+        <div class="modal fade" id="sicherModalLabel" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h1 class="modal-title fs-5" id="exampleModalLabel">Element Löschen</h1>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                  Sind Sie sicher, dass Sie dieses Element löschen wollen?
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="bearbeitenDe()">Ja</button>
+                  <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Nein</button>
+                </div>
+              </div>
+            </div>
+        </div>
+
+        <table class="table table-striped">
+            <thead>
+              <tr>
+                <th scope="col">#</th>
+                <th scope="col">Name</th>
+                <th scope="col">Datum</th>
+                <th scope="col">Uhrzeit</th>
+                <th scope="col">Dauer</th>
+              </tr>
+            </thead>
+            <tbody id = table class="table-group-divider">
+
+            </tbody>
+        </table>
+        
+        <div class="d-grid gap-2 d-md-flex">
+            <div>
+                <button type="button" class="btn btn-primary me-md-2" data-bs-toggle="modal" onclick="inhaltDelete()" data-bs-target="#addModal"><img src="addIcon.png"></button>
+                <button class="btn btn-primary me-md-2" id="buttonBearbeiten" onclick="bBearbeitenC()" type="button">Bearbeiten</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+    
+</body>
+<%- include('./partials/footer.ejs') %>
+</html>

@@ -1,3 +1,4 @@
+const Fridge = require("./fridge/lib/Fridge");
 var Promise = require("bluebird");
 const express = require('express');
 const bodyParser = require('body-parser');
@@ -115,7 +116,6 @@ class HTTPSServer{
 		this.port = port;
 		this.expressApp = express();
 		this.fridge = new Fridge();
-
 		this.expressApp.use(helmet());
 
 		this.expressApp.use(bodyParser.urlencoded({extended : true}));
@@ -158,9 +158,10 @@ class HTTPSServer{
 		_io.use(socketAuthorization);
 		_io.of("/login" ).on('connection', socketLogin.onConnection);
 		_io.of("/loggedIn" ).on('connection', socketLoggeIn.onConnection);
-
 		this.httpsServer.listen(this.port);
 		console.log("listening on port ",this.port);
+		
+		this.fridge.wsUebergeben(_io);
 	}
 	async close(){
 		this.fridge.close();
