@@ -19,11 +19,11 @@ class Fridge{
       // expressApp.settings('views', './fridge/lib/views');
       expressApp.set('view engine', 'ejs');
 
-      expressApp.use((req, res, next) =>{
+/*      expressApp.use((req, res, next) =>{
         if (req.url.startsWith("/fridge")) {
           next();
         }
-      });
+      });*/
 
       expressApp.set('views', './fridge/views');
 
@@ -74,9 +74,9 @@ class Fridge{
         res.status(200).send();
       });
 
-      expressApp.use((req, res) =>{
+ /*     expressApp.use((req, res) =>{
         res.status(404).render('404', {title: '404'});
-      });
+      });*/
     }
 
     datenSpeichern() {
