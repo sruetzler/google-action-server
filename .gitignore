@@ -109,3 +109,13 @@ dist
 
 # TernJS port file
 .tern-port
+
+localhost.crt
+localhost.key
+localhost.csr
+localhost.ext
+abc.json
+ca.key
+ca.crt
+
+/abc/adsf/
