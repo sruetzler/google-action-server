@@ -1,1 +1,1 @@
-{"verriegelt":true,"zeiten":[{"id":0,"Name":"Henri","Datum":"2023-09-26","Uhrzeit":"15:30","Dauer":"9339","Code":"893274"},{"Name":"Erik","Datum":"2222-02-22","Uhrzeit":"22:22","Dauer":"223","Code":"324234"}]}
+{"verriegelt":false,"zeiten":[{"id":0,"Name":"Henri","Datum":"2023-09-26","Uhrzeit":"15:30","Dauer":"9339","Code":"893274"},{"Name":"Erik","Datum":"2222-02-22","Uhrzeit":"22:22","Dauer":"223","Code":"324234"},{"id":2,"Name":"Dirk","Datum":"2343-04-23","Uhrzeit":"22:03","Dauer":"234","Code":"234"}]}
