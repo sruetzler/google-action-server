@@ -161,7 +161,7 @@ class HTTPSServer{
 		this.httpsServer.listen(this.port);
 		console.log("listening on port ",this.port);
 		
-		this.fridge.wsUebergeben(_io);
+		// this.fridge.wsUebergeben(_io);
 	}
 	async close(){
 		this.fridge.close();

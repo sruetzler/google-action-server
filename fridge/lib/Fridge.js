@@ -1,13 +1,17 @@
 const express = require('express');
 const fs = require('fs');
 const basicAuth = require('express-basic-auth');
-var daten = {"verriegelt":false,"zeiten":[]};
+const mqtt = require('mqtt');
+var daten = {"verriegelt":true,"zeiten":[]};
 var verbindungen = new Array();
 
 
+
 class Fridge{
+  
   constructor(){
     this.datenLaden();
+    this.mqttClient();
 
   }
 
@@ -19,11 +23,6 @@ class Fridge{
       // expressApp.settings('views', './fridge/lib/views');
       expressApp.set('view engine', 'ejs');
 
-/*      expressApp.use((req, res, next) =>{
-        if (req.url.startsWith("/fridge")) {
-          next();
-        }
-      });*/
 
       expressApp.set('views', './fridge/views');
 
@@ -74,9 +73,12 @@ class Fridge{
         res.status(200).send();
       });
 
- /*     expressApp.use((req, res) =>{
-        res.status(404).render('404', {title: '404'});
-      });*/
+      expressApp.use((req, res, next) =>{
+        if (req.url.startsWith("/fridge")) {
+          res.status(404).render('404', {title: '404'});
+        }
+        next();
+      });
     }
 
     datenSpeichern() {
@@ -84,15 +86,11 @@ class Fridge{
       fs.writeFile('./fridge/data/daten.json', json , () =>{
           // console.log('file has written')
       });
-      verbindungen.forEach(function (list) {
-        try{
-          const socket = list[1];
-          // console.log(socket);
-          socket.emit('data', JSON.stringify(daten));
-        }catch(error){
-          console.error(error);
-        }
-      })
+      const options = {
+        qos: 1
+      };
+
+      this.client.publish('henri/fridge', JSON.stringify(daten), options);
     
     }
 
@@ -110,50 +108,30 @@ class Fridge{
       });
     }
 
-    wsUebergeben(_io){
-      const io = _io;
-      io.of("/fridge" ).on('connection', (socket) => {
-        console.log('a user connected');
-        var id = null;
-        
-        
-        if (verbindungen.length != 0) {
-          id = verbindungen[verbindungen.length -1][0] +1;
-        }else{
-          id = 0;
-        }
-        verbindungen.push([id, socket]);
-        // verbindungen[0][1].emit('data', JSON.stringify(daten));
-        verbindungen[verbindungen.length -1][1].emit('data', JSON.stringify(daten));
-        // socket.emit('data', JSON.stringify(daten));
-        // console.log(verbindungen);
-        
+    mqttClient(){
 
-        socket.on('disconnect', () => {
-          console.log('user disconnected');
-          for (let i = 0; i < verbindungen.length; i++) {
-            const stelle = verbindungen[i][0];
-            if (id == stelle) {
-              verbindungen.splice(i, 1);
-              break;
-            }
-            
-          }
-          // console.log(verbindungen);
-        });
+      const credentials = JSON.parse(fs.readFileSync('./fridge/data/secret.json'));
 
+      console.log(JSON.parse(fs.readFileSync('./fridge/data/secret.json')).usernameMqtt);
 
+      const broker = 'mqtts://sruetzler.de:8883';
+      const clientId = 'HenriFridge';
+      const username = credentials.usernameMqtt;
+      const password = credentials.passwordMqtt;
 
+      const options = {
+        clientId,
+        username,
+        password,
+        cleanSession: true,
+        rejectUnauthorized: false,
+        ca: null // oder []
+      };
 
-
-        // socket.on("hugo", (data, cb)=>{
-        //   console.log(data)
-        //   socket.emit("emil",data, (response)=>{
-
-        //   });
-        // })
-      });
+      this.client = mqtt.connect(broker, options);
     }
+
+    test = "";
 
     basicAuthMiddleware = basicAuth({
       users: { 'admin': 'admin' }, // Hier deine Benutzername-Passwort-Kombinationen eintragen
