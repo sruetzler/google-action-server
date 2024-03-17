@@ -2,28 +2,16 @@ const express = require('express');
 const fs = require('fs');
 const basicAuth = require('express-basic-auth');
 const mqtt = require('mqtt');
-var daten = {"verriegelt":false,"zeiten":[]};
+var daten = {"verriegelt":true,"zeiten":[]};
 var verbindungen = new Array();
 
-const broker = 'mqtts://sruetzler.de:8883';
-const clientId = 'HenriFridge';
-const username = 'henri';
-const password = 'Br@hn*6^ZD*kaK';
 
-const options = {
-  clientId,
-  username,
-  password,
-  cleanSession: true,
-  rejectUnauthorized: false,
-  ca: null // oder []
-};
-
-const client = mqtt.connect(broker, options);
 
 class Fridge{
+  
   constructor(){
     this.datenLaden();
+    this.mqttClient();
 
   }
 
@@ -99,7 +87,11 @@ class Fridge{
       fs.writeFile('./fridge/data/daten.json', json , () =>{
           // console.log('file has written')
       });
-      client.publish('henri/fridge', JSON.stringify(daten));
+      const options = {
+        qos: 1
+      };
+
+      this.client.publish('henri/fridge', JSON.stringify(daten), options);
     
     }
 
@@ -117,7 +109,30 @@ class Fridge{
       });
     }
 
-   
+    mqttClient(){
+
+      const credentials = JSON.parse(fs.readFileSync('./fridge/data/secret.json'));
+
+      console.log(JSON.parse(fs.readFileSync('./fridge/data/secret.json')).usernameMqtt);
+
+      const broker = 'mqtts://sruetzler.de:8883';
+      const clientId = 'HenriFridge';
+      const username = credentials.usernameMqtt;
+      const password = credentials.passwordMqtt;
+
+      const options = {
+        clientId,
+        username,
+        password,
+        cleanSession: true,
+        rejectUnauthorized: false,
+        ca: null // oder []
+      };
+
+      this.client = mqtt.connect(broker, options);
+    }
+
+    test = "";
 
     basicAuthMiddleware = basicAuth({
       users: { 'admin': 'admin' }, // Hier deine Benutzername-Passwort-Kombinationen eintragen
