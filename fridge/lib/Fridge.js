@@ -2,9 +2,12 @@ const express = require('express');
 const fs = require('fs');
 const basicAuth = require('express-basic-auth');
 const mqtt = require('mqtt');
+const bcrypt = require('bcryptjs');
 var daten = {"verriegelt":true,"zeiten":[]};
 var verbindungen = new Array();
+const benutzerWeb = JSON.parse(fs.readFileSync('./fridge/data/benutzerWeb.json', 'utf-8'));
 
+// console.log(bcrypt.hashSync('password', 10));
 
 
 class Fridge{
@@ -41,6 +44,16 @@ class Fridge{
         res.send(JSON.stringify(daten));
       });
 
+
+      expressApp.get("/fridge/validatepassword", (req, res) =>{
+        const username = atob(req.headers['authorization'].split(' ')[1]);
+        // console.log(username);
+        const parts = username.split(":");
+        // console.log(parts[1]);
+
+        res.send(JSON.stringify(parts[1]));
+      });
+
       expressApp.put('/fridge/swClick', (req, res) =>{
         if (req.body == 'true') {
             daten['verriegelt'] = true;
@@ -54,6 +67,12 @@ class Fridge{
       expressApp.put('/fridge/neueDaten', (req, res) =>{
         daten['zeiten'].push(req.body);
         this.datenSpeichern();
+        res.status(200).send();
+      });
+
+      expressApp.put('/fridge/changePassword', (req, res) =>{
+        // console.log(req);
+        // console.log("Aufgerufen")
         res.status(200).send();
       });
 
@@ -112,34 +131,63 @@ class Fridge{
 
       const credentials = JSON.parse(fs.readFileSync('./fridge/data/secret.json'));
 
-      console.log(JSON.parse(fs.readFileSync('./fridge/data/secret.json')).usernameMqtt);
+      // console.log(JSON.parse(fs.readFileSync('./fridge/data/secret.json')).usernameMqtt);
 
       const broker = 'mqtts://sruetzler.de:8883';
-      const clientId = 'HenriFridge';
+      const clientId = 'HenriFridge123';
       const username = credentials.usernameMqtt;
       const password = credentials.passwordMqtt;
 
       const options = {
-        clientId,
+        // clientId,
         username,
         password,
-        cleanSession: true,
+        // cleanSession: true,
         rejectUnauthorized: false,
         ca: null // oder []
       };
 
       this.client = mqtt.connect(broker, options);
+
+      this.client.on('connect', () => {
+        // console.log('Connected');
+        this.client.subscribe('henri/neuVerbunden', () =>{
+          // console.log('Subscribe to topic');
+        })
+      });
+
+      this.client.on("error",err=>{
+        console.error(err)
+      });
+
+      this.client.on("disconnect",()=>{
+        // console.log("disconnected");
+      });
+
+      this.client.on('message', (topic, payload) => {
+        // console.log('Received Message:', topic, payload.toString())
+        if (topic == 'henri/neuVerbunden') {
+          this.client.publish('henri/fridge', JSON.stringify(daten), options);
+        }
+      });
+
     }
 
-    test = "";
+    authorizer = (username, password) => {
+      const user = benutzerWeb.find(user => user.username === username);
+      // const hashedPassword = users[username];
+      if (!user) {
+        return false; // User not found
+      }
+    
+      return bcrypt.compareSync(password, user.password); // Securely compare passwords
+    };
 
     basicAuthMiddleware = basicAuth({
-      users: { 'admin': 'admin' }, // Hier deine Benutzername-Passwort-Kombinationen eintragen
-      challenge: true,
+      authorizer: this.authorizer,
+      challenge: true, // Send WWW-Authenticate header on failed attempts
       unauthorizedResponse: 'Unauthorized'
     });
-
-
 }
 
 
