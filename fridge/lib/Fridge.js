@@ -27,7 +27,6 @@ class Fridge{
       expressApp.set('view engine', 'ejs');
 
 
-
       expressApp.set('views', './fridge/views');
 
       expressApp.use("/fridge",this.basicAuthMiddleware ,express.static('./fridge/static'));
