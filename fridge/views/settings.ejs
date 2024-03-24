@@ -4,10 +4,102 @@
 <body>    
     <div class="container">
         <%- include('./partials/nav.ejs') %>
+        
+        <!-- Button trigger modal -->
+
+        
+        <!-- Modal -->
+        <div class="modal fade" id="changePasswordModal" tabindex="-1" aria-labelledby="changePasswordModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                <h1 class="modal-title fs-5" id="changePasswordModalLabel">Passwort ändern</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+
+                    <form class="row g-3 needs-validation" novalidate  onsubmit="return validatePasswords()">
+
+                        <label for="inputAkutellesPassword" class="form-label" style="margin-top: 10px;">Bitte gebe dein akutelles Passwort ein</label>
+                        <input type="password" id="inputAkutellesPassword" class="form-control" style="margin-top: 2px;" required>
+                        <div class="form-check" style="margin-top: 5px; margin-left: 5px;">
+                            <input class="form-check-input"type="checkbox" onclick="showPassword('inputAkutellesPassword')" id="passwortZeigen">
+                            <label class="form-check-label" for="passwortZeigen">
+                                Passwort zeigen
+                            </label>
+                        </div>
+
+
+                        <label for="inputNeuesPassword" class="form-label" style="margin-top: 10px;">Bitte gebe ein neus Passwort ein</label>
+                        <input type="password" id="inputNeuesPassword" class="form-control" style="margin-top: 2px;" aria-describedby="passwordHelpBlock1" required>
+                        <div id="passwordHelpBlock1" class="form-text">
+                            Dein Passwort sollte möglichst komplex sein.
+                        </div>
+                        <div class="form-check" style="margin-top: 5px; margin-left: 5px;">
+                            <input class="form-check-input"type="checkbox" onclick="showPassword('inputNeuesPassword')" id="passwortZeigen">
+                            <label class="form-check-label" for="passwortZeigen">
+                                Passwort zeigen
+                            </label>
+                            
+                        
+                        </div>
+
+
+                        <label for="inputNeuesPasswordAgain" class="form-label" style="margin-top: 10px;">Bitte wiederhole das neue Passwort</label>
+                        <input type="password" id="inputNeuesPasswordAgain" class="form-control" style="margin-top: 2px;" required>
+                        <div class="invalid-feedback">
+                            Die Passwörter stimmen nicht überein!
+                        </div>
+                        <div class="form-check" style="margin-top: 5px; margin-left: 5px;">
+                            <input class="form-check-input"type="checkbox" onclick="showPassword('inputNeuesPasswordAgain')" id="passwortZeigen">
+                            <label class="form-check-label" for="passwortZeigen">
+                                Passwort zeigen
+                            </label>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Abbrechen</button>
+                            <button type="submit" class="btn btn-primary">Passwort ändern</button>
+                        </div>
+                      </form>
+
+                </div>
+            </div>
+            </div>
+        </div>
+        
 
         <h1>Einstellungen</h1>
-        <p>Mal sehen was hier noch für Einstellungen entstehen :)</p>
 
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#changePasswordModal">Passwort ändern</button>
+
+
+      
+        <script>
+            // Example starter JavaScript for disabling form submissions if there are invalid fields
+            (() => {
+              'use strict'
+            
+              // Fetch all the forms we want to apply custom Bootstrap validation styles to
+              const forms = document.querySelectorAll('.needs-validation')
+            
+              // Loop over them and prevent submission
+              Array.from(forms).forEach(form => {
+                form.addEventListener('submit', event => {
+                  if (!form.checkValidity()) {
+                    event.preventDefault()
+                    event.stopPropagation()
+                  }
+            
+                  form.classList.add('was-validated')
+                }, false)
+              })
+            })()
+            
+            </script>
+
+
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
 
         
     
