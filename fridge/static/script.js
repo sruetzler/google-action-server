@@ -3,6 +3,7 @@ let json;
 let auswahl = -1;
 var myAddModal;
 var myEditModal;
+var currentPage;
 
 function swClick() {
     // Objekt der Klasse XMLHttpRequest erstellen
@@ -27,11 +28,18 @@ function swClick() {
 }
 
 function allesLaden() {
+    currentPage = window.location.pathname; // Gibt den Dateinamen der geladenen Seite zurück
+    console.log("Die aktuelle Seite ist: " + currentPage);
+    parseJSON();
+    
+    if (currentPage === "/fridge/settings/") {
+        return
+    }
+
     console.log("Die Seite wurde geladen :)")
     myAddModal = new bootstrap.Modal(document.getElementById('addModal'));
     myEditModal = new bootstrap.Modal(document.getElementById('bearbeitenModal'));
     
-    parseJSON();
     
    
 }
@@ -110,78 +118,79 @@ function inhaltDelete() {
 function parseJSON() {
     let xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function (id) {
-      if (this.readyState == 4 && this.status == 200) {
-        // document.getElementById("2").innerHTML = this.responseText;
-        console.log(this.responseText);
+        if (this.readyState == 4 && this.status == 200) {
+            // document.getElementById("2").innerHTML = this.responseText;
+            console.log(this.responseText);
 
-        const jsonString = this.responseText;
-        json = JSON.parse(jsonString);
-        console.log(json.verriegelt);
-        document.getElementById("flexSwitchCheckDefault").checked = json.verriegelt;
-      
+            const jsonString = this.responseText;
+            json = JSON.parse(jsonString);
+            console.log(json.verriegelt);
+            document.getElementById("flexSwitchCheckDefault").checked = json.verriegelt;
         
+            
 
-        // JSON-String erstellen
-        // const jsonString = "{'verriegelt':true,'zeiten':[{'Name':'Erik','Datum':'13.01.2024','Dauer':'3','Code':'5763'},{'Name':'Henri','Datum':'13.01.2024','Dauer':'3','Code':'5763'}]}";
-        
-        // JSON-Objekt aus dem JSON-String erstellen
-        // const json = {"verriegelt":true,"zeiten":[{"Name":"Erik","Datum":"13.01.2024","Uhrzeit":"12:00","Dauer":"3","Code":"5763"},{"Name":"Henri","Datum":"13.01.2024","Uhrzeit":"12:00","Dauer":"3","Code":"5763"}]};
-        // const json = this.responseText;
-        
-        // Tabellenelemente erstellen
-        const tableRows = [];
-        zaehler = 0;
-        
-    
-    
-        for (const zeit of json.zeiten) {
-            const tableRow = document.createElement("tr");
+            // JSON-String erstellen
+            // const jsonString = "{'verriegelt':true,'zeiten':[{'Name':'Erik','Datum':'13.01.2024','Dauer':'3','Code':'5763'},{'Name':'Henri','Datum':'13.01.2024','Dauer':'3','Code':'5763'}]}";
+            
+            // JSON-Objekt aus dem JSON-String erstellen
+            // const json = {"verriegelt":true,"zeiten":[{"Name":"Erik","Datum":"13.01.2024","Uhrzeit":"12:00","Dauer":"3","Code":"5763"},{"Name":"Henri","Datum":"13.01.2024","Uhrzeit":"12:00","Dauer":"3","Code":"5763"}]};
+            // const json = this.responseText;
+            
+            // Tabellenelemente erstellen
+            const tableRows = [];
+            zaehler = 0;
 
-            const checkInput = document.createElement("td");
-            const checkbox = document.createElement("input");
-            checkbox.setAttribute("type", "checkbox");
-            checkbox.setAttribute("class", "form-check-input");
-            checkbox.setAttribute("id", "checkbox" + zaehler);
-            const i = zaehler;
-            checkbox.onclick = function(){
-                onlyOne(i);
+
+            if (currentPage === "/fridge/") {
+                for (const zeit of json.zeiten) {
+                    const tableRow = document.createElement("tr");
+
+                    const checkInput = document.createElement("td");
+                    const checkbox = document.createElement("input");
+                    checkbox.setAttribute("type", "checkbox");
+                    checkbox.setAttribute("class", "form-check-input");
+                    checkbox.setAttribute("id", "checkbox" + zaehler);
+                    const i = zaehler;
+                    checkbox.onclick = function(){
+                        onlyOne(i);
+                    }
+                    // checkbox.setAttribute("onclick", onlyOne(zaehler));
+                    checkInput.appendChild(checkbox);
+                    tableRow.appendChild(checkInput);
+
+                    
+                    
+                    const nameCell = document.createElement("th");
+                    nameCell.textContent = zeit.Name;
+                    tableRow.appendChild(nameCell);
+                    
+                    const datumCell = document.createElement("td");
+                    datumCell.textContent = zeit.Datum;
+                    tableRow.appendChild(datumCell);
+                    
+                    const uhrzeitCell = document.createElement("td");
+                    uhrzeitCell.textContent = zeit.Uhrzeit;
+                    tableRow.appendChild(uhrzeitCell);
+                    
+                    const dauerCell = document.createElement("td");
+                    dauerCell.textContent = zeit.Dauer;
+                    tableRow.appendChild(dauerCell);
+
+                    tableRows.push(tableRow);
+                    zaehler ++;
+                }
+                
+                // Tabellenelemente der Tabelle hinzufügen
+                const table = document.getElementById("table");
+                while (table.firstChild) {
+                    table.removeChild(table.firstChild);
+                }
+                
+                for (const tableRow of tableRows) {
+                    table.appendChild(tableRow);
+                }
             }
-            // checkbox.setAttribute("onclick", onlyOne(zaehler));
-            checkInput.appendChild(checkbox);
-            tableRow.appendChild(checkInput);
-
-            
-            
-            const nameCell = document.createElement("th");
-            nameCell.textContent = zeit.Name;
-            tableRow.appendChild(nameCell);
-            
-            const datumCell = document.createElement("td");
-            datumCell.textContent = zeit.Datum;
-            tableRow.appendChild(datumCell);
-            
-            const uhrzeitCell = document.createElement("td");
-            uhrzeitCell.textContent = zeit.Uhrzeit;
-            tableRow.appendChild(uhrzeitCell);
-            
-            const dauerCell = document.createElement("td");
-            dauerCell.textContent = zeit.Dauer;
-            tableRow.appendChild(dauerCell);
-
-            tableRows.push(tableRow);
-            zaehler ++;
         }
-        
-        // Tabellenelemente der Tabelle hinzufügen
-        const table = document.getElementById("table");
-        while (table.firstChild) {
-            table.removeChild(table.firstChild);
-        }
-        
-        for (const tableRow of tableRows) {
-            table.appendChild(tableRow);
-        }
-    }
     };
     xhttp.open("GET", "/fridge/statusSwitch", true);
     xhttp.send();
@@ -291,6 +300,76 @@ function bearbeitenDe() {
     xhr.send(datenString);
 
     parseJSON();
+}
+
+
+function validatePasswords(){
+    var validatepassword = false;
+    const mainPassword = document.getElementById("inputAkutellesPassword").value;
+    const password1 = document.getElementById("inputNeuesPassword").value;
+    const password2 = document.getElementById("inputNeuesPasswordAgain").value;
+
+    const mainPasswordInput = document.getElementById("inputAkutellesPassword");
+    const password1Input = document.getElementById("inputNeuesPassword");
+    const password2Input = document.getElementById("inputNeuesPasswordAgain");
+
+
+    let xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function (id) {
+        if (this.readyState == 4 && this.status == 200) {
+            // console.log(this.responseText);
+            if (this.responseText ===  '"' + mainPassword + '"') {
+                console.log("Es ist richtig!!!");
+                mainPasswordInput.classList.remove("is-invalid");
+                mainPasswordInput.setCustomValidity('');
+                validatepassword = true;
+            }else{
+                console.log("Es ist nicht richtig!!!");
+                mainPasswordInput.classList.add("is-invalid");
+                mainPasswordInput.setCustomValidity("Passwords Don't Match");
+                validatepassword = false;
+            }
+        }
+        
+        
+        
+        
+        
+        
+        
+        // if (password1 === password2 && validatepassword) {
+        //     console.log("!!!!!!!!1Aufgerufen!!!!!!!!!!!");
+        //     let xhr = new XMLHttpRequest();
+        //     xhr.open("PUT", "/fridge/changePassword", true);
+            
+        //     xhr.setRequestHeader("Content-Type", "application/json");
+            
+        //     xhr.send(JSON.stringify(password1Input));
+            
+        //     // return true
+        // }else{
+        //     console.log("false")
+        //     // return false
+        // }
+        
+    }
+    xhttp.open("GET", "/fridge/validatepassword", true);
+    xhttp.send();
+
+
+    if (password1 !== password2) {
+        password1Input.classList.add("is-invalid");
+        password2Input.classList.add("is-invalid");
+        password1Input.setCustomValidity("Passwords Don't Match")
+        password2Input.setCustomValidity("Passwords Don't Match");
+    } else {
+        password1Input.classList.remove("is-invalid");
+        password2Input.classList.remove("is-invalid");
+        password1Input.setCustomValidity('');
+        password2Input.setCustomValidity('');
+    }
+
+    return (password1 === password2) === (this.responseText ===  '"' + mainPassword + '"');
 }
 
 
